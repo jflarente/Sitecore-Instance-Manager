@@ -76,6 +76,12 @@
     [VerbOption("delete", HelpText = "Delete Sitecore instance.")]
     public DeleteCommandFacade DeleteCommandFacade { get; set; }
 
-    #endregion
-  }
+        [CanBeNull]
+        [UsedImplicitly]
+        [VerbOption("import", HelpText = "Import Sitecore Solution.")]
+        public ImportCommandFacade ImportCommandFacade { get; set; }
+
+
+        #endregion
+    }
 }

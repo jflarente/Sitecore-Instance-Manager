@@ -109,6 +109,7 @@
     <Compile Include="Commands\BrowseCommandFacade.cs" />
     <Compile Include="Commands\ConfigCommandFacade.cs" />
     <Compile Include="Commands\DeleteCommandFacade.cs" />
+    <Compile Include="Commands\ImportCommandFacade.cs" />
     <Compile Include="Commands\InstallCommandFacade.cs" />
     <Compile Include="Commands\InstallModuleCommandFacade.cs" />
     <Compile Include="Commands\ListCommandFacade.cs" />
