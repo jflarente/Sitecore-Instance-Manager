@@ -1,4 +1,6 @@
-﻿namespace SIM.Pipelines.Import
+﻿using System.IO;
+
+namespace SIM.Pipelines.Import
 {
   using System;
   using System.Collections.Generic;
@@ -94,7 +96,8 @@
       List<string> dbNames = new List<string>();
       foreach (string backupPath in dbBackupsPaths)
       {
-        dbNames.Add(SqlServerManager.Instance.GetDatabasesNameFromBackup(connectionString, backupPath).dbOriginalName);
+		
+				dbNames.Add(SqlServerManager.Instance.GetDatabasesNameFromBackup(connectionString, backupPath).dbOriginalName);
       }
 
       var i = 0;
@@ -179,16 +182,30 @@
       }
 
       var backupInfo = new SqlServerManager.BackupInfo();
-      this.GetPostfixForDatabases(backupsPaths, args.connectionString, ref args.databaseNameAppend);
+
+      if (!args.useInstanceNameForDatabasePrefix)
+      {
+        this.GetPostfixForDatabases(backupsPaths, args.connectionString, ref args.databaseNameAppend);
+      }
+      
+      args.DatabaseRestoreInfo = new Dictionary<string, string>();
 
       foreach (string backup in backupsPaths)
       {
+        var dbName = "";
         backupInfo = SqlServerManager.Instance.GetDatabasesNameFromBackup(args.connectionString, backup);
-        var dbName = backupInfo.dbOriginalName;
+        if (!args.useInstanceNameForDatabasePrefix)
+        {
+          dbName = backupInfo.dbOriginalName;
+        }
+        else
+        { 
+          dbName = args.siteName + "_" + backupInfo.logicalNameMdf.Replace('.','_');
+        }
 
         // dbName = GetDatabaseName(dbName, args.connectionString, ref args.databaseNameAppend);
         dbName = this.GetDatabaseName(dbName, ref args.databaseNameAppend);
-
+        args.DatabaseRestoreInfo.Add(Path.GetFileNameWithoutExtension(backup), dbName);
         // dbName = dbName + GetDBNameAppend(dbName, args.connectionString, 0);
         SqlServerManager.Instance.RestoreDatabase(dbName, 
           args.connectionString, 

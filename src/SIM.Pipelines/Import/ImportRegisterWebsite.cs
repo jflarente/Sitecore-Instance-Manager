@@ -1,4 +1,8 @@
-﻿namespace SIM.Pipelines.Import
+﻿using System;
+using Microsoft.Web.Administration;
+using Sitecore.Diagnostics.Base;
+
+namespace SIM.Pipelines.Import
 {
   using System.Collections.Generic;
   using System.Diagnostics;
@@ -141,6 +145,14 @@
       args.appPoolName = this.CreateNewAppPoolName(args.appPoolName);
       appPoolSettings.SetElementAttributeValue("/appcmd/APPPOOL", "APPPOOL.NAME", args.appPoolName);
       appPoolSettings.SetElementAttributeValue("appcmd/APPPOOL/add", "name", args.appPoolName);
+      
+      // Optional parameters to set the AppPool Identity
+      if (!string.IsNullOrEmpty(args.appPoolIdentityType) && args.appPoolIdentityType != "NetworkService")
+      {
+        appPoolSettings.SetElementAttributeValue("appcmd/APPPOOL/add/processModel", "identityType", args.appPoolIdentityType);
+        appPoolSettings.SetElementAttributeValue("appcmd/APPPOOL/add/processModel", "userName", args.appPoolUserName);
+        appPoolSettings.SetElementAttributeValue("appcmd/APPPOOL/add/processModel", "password", args.appPoolPassword);
+      }
 
       appPoolSettings.Save(appPoolSettings.FilePath + ".fixed.xml");
     }
@@ -153,6 +165,7 @@
     {
       XmlDocumentEx websiteSettings = new XmlDocumentEx();
       websiteSettings.Load(path);
+			InstanceManager.Initialize(); //TODO: Shouldn't be here...
       args.siteName = this.CreateNewSiteName(InstanceManager.Instances, args.siteName);
       websiteSettings.SetElementAttributeValue("/appcmd/SITE", "SITE.NAME", args.siteName);
       websiteSettings.SetElementAttributeValue("/appcmd/SITE/site", "name", args.siteName);

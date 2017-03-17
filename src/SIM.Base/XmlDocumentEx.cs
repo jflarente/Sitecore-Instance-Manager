@@ -174,13 +174,20 @@
       return this;
     }
 
-    public void SetElementAttributeValue(string xpath, string attributeName, string value)
+    public void SetElementAttributeValue(string xpath,string attributeName,string value)
     {
       // Assert.IsTrue(xpath[0] == '/', "The xpath expression must be rooted");
-      XmlElement element = this.SelectSingleElement(this.FixNotRootedXpathExpression(xpath));
-      if (element != null && element.Attributes[attributeName] != null)
+      var element = this.SelectSingleElement(this.FixNotRootedXpathExpression(xpath));
+      if (element == null) return;
+
+      if (element.Attributes[attributeName] != null)
       {
-        element.Attributes[attributeName].Value = value;
+      element.Attributes[attributeName].Value = value;
+      }
+      else
+      { 
+        //if attribute doesn't exist, add it.
+      element?.SetAttribute(attributeName, value);
       }
     }
 

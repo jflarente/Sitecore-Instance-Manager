@@ -1,4 +1,6 @@
-﻿namespace SIM.Pipelines.Import
+﻿using System;
+
+namespace SIM.Pipelines.Import
 {
   using System.Collections.Generic;
   using System.Data.SqlClient;
@@ -18,6 +20,7 @@
 
     // Site settings
     // public List<string> siteBindingsHostnames = new List<string>();
+
     #region Fields
 
     public string appPoolName = string.Empty;
@@ -33,25 +36,34 @@
     public bool updateLicense = false;
     public string virtualDirectoryPath = string.Empty;
     public string virtualDirectoryPhysicalPath = string.Empty;
+    public string appPoolIdentityType = string.Empty;
+    public string appPoolUserName = string.Empty;
+    public string appPoolPassword = string.Empty;
+    public bool useInstanceNameForDatabasePrefix = false;
 
     #endregion
 
     #region Properties
 
     public string PathToExportedInstance { get; set; }
-
+    public Dictionary<string,string> DatabaseRestoreInfo { get; set; }
     #endregion
 
     #region Constructors
 
-    public ImportArgs([NotNull] string pathToExportedInstance, [NotNull] SqlConnectionStringBuilder connectionString)
+    public ImportArgs(
+      [NotNull] string pathToExportedInstance,
+      [NotNull] SqlConnectionStringBuilder connectionString)
     {
       Assert.ArgumentNotNull(pathToExportedInstance, nameof(pathToExportedInstance));
       this.PathToExportedInstance = pathToExportedInstance;
       this.connectionString = connectionString;
     }
 
-    public ImportArgs([NotNull] string pathToExportedInstance, [NotNull] string siteName, [NotNull] SqlConnectionStringBuilder connectionString)
+    public ImportArgs(
+      [NotNull] string pathToExportedInstance,
+      [NotNull] string siteName,
+      [NotNull] SqlConnectionStringBuilder connectionString)
     {
       Assert.ArgumentNotNull(pathToExportedInstance, nameof(pathToExportedInstance));
       this.PathToExportedInstance = pathToExportedInstance;
@@ -59,7 +71,15 @@
       this.connectionString = connectionString;
     }
 
-    public ImportArgs([NotNull] string pathToExportedInstance, [NotNull] string siteName, [NotNull] string temporaryPathToUnpack, [NotNull] string rootPath, [NotNull] SqlConnectionStringBuilder connectionString, bool updateLicense, [CanBeNull] string pathToLicenseFile, [NotNull] Dictionary<string, int> bindings)
+    public ImportArgs(
+      [NotNull] string pathToExportedInstance,
+      [NotNull] string siteName,
+      [NotNull] string temporaryPathToUnpack,
+      [NotNull] string rootPath,
+      [NotNull] SqlConnectionStringBuilder connectionString,
+      bool updateLicense,
+      [CanBeNull] string pathToLicenseFile,
+      [NotNull] Dictionary<string, int> bindings)
     {
       Assert.ArgumentNotNull(pathToExportedInstance, nameof(pathToExportedInstance));
       this.PathToExportedInstance = pathToExportedInstance;
@@ -71,6 +91,37 @@
       this.updateLicense = updateLicense;
       this.pathToLicenseFile = pathToLicenseFile;
       this.bindings = bindings;
+    }
+
+    public ImportArgs(
+      [NotNull] string pathToExportedInstance,
+      [NotNull] string siteName,
+      [NotNull] string temporaryPathToUnpack,
+      [NotNull] string rootPath,
+      [NotNull] SqlConnectionStringBuilder connectionString,
+      bool updateLicense,
+      [CanBeNull] string pathToLicenseFile,
+      [NotNull] Dictionary<string, int> bindings,
+      [CanBeNull] string appPoolIdentityType,
+      [CanBeNull] string appPoolUserName,
+      [CanBeNull] string appPoolPassword,
+      bool useInstanceNameForDatabasePrefix)
+    {
+      Assert.ArgumentNotNull(pathToExportedInstance, nameof(pathToExportedInstance));
+      this.PathToExportedInstance = pathToExportedInstance;
+      this.siteName = siteName;
+      this.temporaryPathToUnpack = temporaryPathToUnpack;
+      this.rootPath = rootPath;
+      this.virtualDirectoryPhysicalPath = this.rootPath.PathCombine("Website");
+      this.connectionString = connectionString;
+      this.updateLicense = updateLicense;
+      this.pathToLicenseFile = pathToLicenseFile;
+      this.bindings = bindings;
+      this.appPoolIdentityType = appPoolIdentityType;
+      this.appPoolUserName = appPoolUserName;
+      this.appPoolPassword = appPoolPassword;
+      this.useInstanceNameForDatabasePrefix = useInstanceNameForDatabasePrefix;
+
     }
 
     #endregion

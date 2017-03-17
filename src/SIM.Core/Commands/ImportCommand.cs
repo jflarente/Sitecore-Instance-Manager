@@ -22,6 +22,7 @@ namespace SIM.Core.Commands
 
 		public virtual string SiteName { get; [UsedImplicitly]set; }
 
+    [CanBeNull]
 		public virtual string TemporaryPathToUnpack { get; [UsedImplicitly]set; }
 
 		public virtual string InstanceRoot { get; [UsedImplicitly]set; }
@@ -34,9 +35,17 @@ namespace SIM.Core.Commands
 		public virtual string PathToLicenseFile { get; [UsedImplicitly]set; }
 		
 		public virtual string Bindings { get; [UsedImplicitly]set; }
+    [CanBeNull]
+    public virtual string AppPoolIdentityType { get; [UsedImplicitly]set; }
+    [CanBeNull]
+    public virtual string AppPoolUserName { get; [UsedImplicitly]set; }
+    [CanBeNull]
+    public virtual string AppPoolPassword { get; [UsedImplicitly]set; }
+
+	  public virtual bool UseInstanceNameForDatabasePrefix { get; [UsedImplicitly] set; }
 
 
-		protected override void DoExecute(CommandResult<string[]> result)
+	  protected override void DoExecute(CommandResult<string[]> result)
 		{
 			Assert.ArgumentNotNull(result, nameof(result));
 
@@ -76,8 +85,7 @@ namespace SIM.Core.Commands
 			var webServerIdentity = Settings.CoreInstallWebServerIdentity.Value;
 
 			var bindings = Bindings.Split(',').Select(part => part.Split(':')).ToDictionary(split => split[0].ToString(), split=> Int32.Parse(split[1].ToString()));
-			
-			var importArgs = new ImportArgs(PathToExportedInstance, siteName,TemporaryPathToUnpack,rootPath,new SqlConnectionStringBuilder(ConnectionString), UpdateLicense,PathToLicenseFile,bindings);
+			var importArgs = new ImportArgs(PathToExportedInstance, siteName,TemporaryPathToUnpack,rootPath,builder, UpdateLicense,PathToLicenseFile,bindings,AppPoolIdentityType,AppPoolUserName,AppPoolPassword,UseInstanceNameForDatabasePrefix);
 
 			var controller = new AggregatePipelineController();
 			PipelineManager.StartPipeline("import", importArgs, controller, false);

@@ -29,6 +29,7 @@
     public static readonly SqlServerManager Instance = new SqlServerManager();
     public static readonly int SqlServerConnectionTimeout;
 
+    
     #endregion
 
     #region Constructors
@@ -292,6 +293,7 @@
     public virtual BackupInfo GetDatabasesNameFromBackup([NotNull] SqlConnectionStringBuilder connectionString, [NotNull] string pathToBak)
     {
       Assert.ArgumentNotNull(connectionString, nameof(connectionString));
+		
 
       BackupInfo res = new BackupInfo(string.Empty, string.Empty, string.Empty, string.Empty, string.Empty);
 

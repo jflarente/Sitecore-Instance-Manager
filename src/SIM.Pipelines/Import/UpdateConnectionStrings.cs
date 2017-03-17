@@ -34,6 +34,11 @@
           {
             builder.InitialCatalog = builder.InitialCatalog + "_" + args.databaseNameAppend.ToString();
           }
+          else if (args.useInstanceNameForDatabasePrefix)
+          {
+            var dbName = args.DatabaseRestoreInfo[conn.Name];
+            builder.InitialCatalog = dbName;
+          }
           else
           {
             builder.InitialCatalog = builder.InitialCatalog;
